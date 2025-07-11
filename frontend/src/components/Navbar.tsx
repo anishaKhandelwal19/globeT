@@ -22,11 +22,9 @@ const Navbar: React.FC = () => {
 
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/Flights", label: "Flights" },
-    { to: "/Hotels", label: "Hotels" },
-    { to: "/Homestays & Villas", label: "Homestays & Villas" },
-    { to: "/Trains", label: "Trains" },
-    { to: "/Cabs", label: "Cabs" },
+    { to: "/flight", label: "Flights" },
+    { to: "/hotel", label: "Hotels" },
+    { to: "/activity", label: "Activity" },
   ];
 
   return (

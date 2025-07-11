@@ -9,7 +9,9 @@ import OAuth2RedirectHandler from "./pages/OAuth2RedirectHandler";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import LocationServices from "./pages/LocationService";
-
+import FlightBookingPage from "./pages/FlightBookingPage";
+import HotelBookingPage from "./pages/HotelBookingPage";
+import ActivityBookingPage from "./pages/ActivityBookingPage";
 
 
 function App() {
@@ -24,6 +26,9 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword/>} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
         <Route path="/location" element={<LocationServices/>}/>
+        <Route path = "/flight" element={<FlightBookingPage/>}/>
+        <Route path = "/hotel" element={<HotelBookingPage/>}/>
+        <Route path="/activity" element={<ActivityBookingPage/>}/>
       </Routes>
 
       <ToastContainer />

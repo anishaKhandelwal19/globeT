@@ -4,11 +4,6 @@ import ServiceCard from '../components/ServiceCard';
 import { fetchServicesByCity } from '../utils/fetchServicesByCity';
 
 
-const servicesByCity: Record<string, string[]> = {
-  Jaipur: ['Cab Booking', 'Hotel Reservation', 'Sightseeing'],
-  Delhi: ['Flights', 'Cabs', 'Heritage Tours'],
-  Mumbai: ['Beach Resorts', 'Cabs', 'Nightlife Tours'],
-};
 
 const LocationServices = () => {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
