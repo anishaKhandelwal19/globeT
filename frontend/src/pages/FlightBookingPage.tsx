@@ -6,8 +6,11 @@ import {
   FlightSearchCriteria,
   FlightResult,
   FlightBookingDetails,
+  type FareDetails
 } from "../interfaces/FlightInterface";
 import { BookingConfirmation } from "../interfaces/BookingInterface";
+import FareDetailsCard from '../components/FareDetailsCard';
+
 import axios from "axios";
 
 declare global {
@@ -38,6 +41,17 @@ const FlightBookingPage: React.FC = () => {
   const [passengerName, setPassengerName] = useState("John Doe");
   const [contactEmail, setContactEmail] = useState("john.doe@example.com");
   const [contactPhone, setContactPhone] = useState("9876543210");
+  const [showFarePopup, setShowFarePopup] = useState(false);
+const [fareDetails, setFareDetails] = useState<FareDetails[] | null>(null);
+const [selectedFare, setSelectedFare] = useState<FareDetails | null>(null);
+
+
+const handleViewFareDetails = (flight: FlightResult) => {
+  setSelectedFlight(flight);
+  setFareDetails(flight.fareDetails || []);
+  setShowFarePopup(true);
+};
+
 
   const formatDuration = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
@@ -64,6 +78,9 @@ const FlightBookingPage: React.FC = () => {
     try {
       const results = await flightBookingService.search(criteria);
       setSearchResults(results);
+      if (results.length === 0) {
+        setMessage('No flights found for your criteria.');
+      }
     } catch (error) {
       console.error("Flight search failed:", error);
       toast.error("Failed to search flights.");
@@ -82,6 +99,12 @@ const FlightBookingPage: React.FC = () => {
       setMessage("Please select a flight first.");
       return;
     }
+    if (!selectedFare) { // If selectedFare is still null
+      setMessage('Please select a fare option first by clicking "View Price & Details".');
+      toast.error('Please select a fare option!');
+      document.getElementById("fare-details-section")?.scrollIntoView({ behavior: "smooth" }); // Optional: scroll to the fare details
+      return; // Exit the function, preventing the call to toBookingDetails with null
+      }
 
     setLoading(true);
     setMessage("");
@@ -115,7 +138,9 @@ const FlightBookingPage: React.FC = () => {
           selectedSeats,
           flightClass,
           contactEmail,
-          contactPhone
+          contactPhone,
+          selectedFare
+        
         );
 
       const confirmation = await flightBookingService.book(bookingDetails);
@@ -329,6 +354,16 @@ const FlightBookingPage: React.FC = () => {
                   <span className="text-2xl font-bold text-green-600">
                     ${flight.price}
                   </span>
+                                <button
+                onClick={(e) => {
+                  e.stopPropagation(); // prevents flight selection when clicking the button
+                  handleViewFareDetails(flight);
+                }}
+                className="mt-2 text-sm text-blue-600 font-semibold underline hover:text-blue-800"
+                >
+                View Price & Details
+                </button>
+
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                   <div>
@@ -356,7 +391,7 @@ const FlightBookingPage: React.FC = () => {
             ))}
           </div>
           {selectedFlight && (
-            <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+            <div id = "booking-section" className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">
                 Confirm Your Selection
               </h3>
@@ -426,6 +461,32 @@ const FlightBookingPage: React.FC = () => {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {showFarePopup && fareDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full relative">
+            <button
+              onClick={() => setShowFarePopup(false)}
+              className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl font-bold"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-bold mb-4 text-blue-600">Fare Details</h3>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto">
+              <FareDetailsCard
+              fareOptions={fareDetails}
+              onClose={() => setShowFarePopup(false)}
+              onSelectFare={(fare) => {
+                setSelectedFare(fare);
+                toast.info(`Selected fare: ${fare.title}`);
+                document.getElementById("booking-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            />
+
+            </div>
+          </div>
         </div>
       )}
 

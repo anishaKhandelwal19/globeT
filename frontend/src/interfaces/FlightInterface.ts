@@ -2,6 +2,16 @@ import { FlightClassType, SeatType } from "../enums/FlightEnum";
 import { BookingType } from "../enums/BookingType";
 import { type GenericBookingDetails } from "./BookingInterface";
 
+export interface FareDetails {
+  title: string;
+  price: number;
+  baggage: string;
+  flexibility: string;
+  meals: string;
+  seats: string;
+}
+
+
 export class FlightSearchCriteria {
   public origin: string;
   public destination: string;
@@ -48,6 +58,7 @@ export class FlightResult {
   public providerName: string;
   public lastUpdated: Date;
   public route: string;
+  public fareDetails: FareDetails[]; // ✅ NEW
 
   constructor(
     id: string,
@@ -59,7 +70,8 @@ export class FlightResult {
     arrivalTime: string,
     price: number,
     durationMinutes: number,
-    availableSeats: number
+    availableSeats: number,
+    fareDetails: FareDetails[] = [] // ✅ NEW
   ) {
     this.id = id;
     this.flightNumber = flightNumber;
@@ -75,6 +87,8 @@ export class FlightResult {
     this.providerName = "SimulatedAPI";
     this.lastUpdated = new Date();
     this.route = `${departureAirport}-${arrivalAirport}`;
+
+    this.fareDetails = fareDetails; // ✅ NEW
   }
 
   toBookingDetails(
@@ -95,7 +109,8 @@ export class FlightResult {
     }[],
     chosenFlightClass: FlightClassType,
     contactEmail: string,
-    contactPhoneNumber: string
+    contactPhoneNumber: string,
+    selectedFare: FareDetails
   ): FlightBookingDetails {
     return new FlightBookingDetails(
       "tempBookingId-" + Math.random().toString(36).substr(2, 9),
@@ -108,10 +123,15 @@ export class FlightResult {
       passengerDetails,
       selectedSeats,
       chosenFlightClass,
-      this.route
+      this.route,
+      selectedFare
     );
   }
 }
+
+
+
+
 
 export class FlightBookingDetails implements GenericBookingDetails {
   public bookingId: string;
@@ -140,6 +160,7 @@ export class FlightBookingDetails implements GenericBookingDetails {
   public route: string;
   public bookingDate: Date;
   public bookedEntityType: BookingType;
+  public selectedFare: FareDetails;
 
   constructor(
     bookingId: string,
@@ -165,7 +186,8 @@ export class FlightBookingDetails implements GenericBookingDetails {
       seatType: SeatType;
     }[],
     chosenFlightClass: FlightClassType,
-    route: string
+    route: string,
+     selectedFare: FareDetails
   ) {
     this.bookingId = bookingId;
     this.userId = userId;
@@ -180,6 +202,7 @@ export class FlightBookingDetails implements GenericBookingDetails {
     this.route = route;
     this.bookingDate = new Date();
     this.bookedEntityType = BookingType.FLIGHT;
+    this.selectedFare = selectedFare;
   }
 
   isValidForBooking(): boolean {
