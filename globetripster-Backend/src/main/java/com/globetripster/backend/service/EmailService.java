@@ -19,4 +19,14 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendOtpEmail(String toEmail, String otp) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Globetripster - Your OTP Code");
+        message.setText("Your OTP is: " + otp + "\n\nIt will expire in 5 minutes.\n\nDo not share this with anyone.");
+        message.setFrom("your-email@gmail.com");
+
+        mailSender.send(message);
+    }
 }
